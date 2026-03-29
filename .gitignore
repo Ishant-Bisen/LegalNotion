@@ -1,0 +1,44 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+dist-ssr
+
+# Environment variables
+.env
+.env.*
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Local overrides
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.cursor
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Cloudflare tunnel binary
+cloudflared.exe
+
+# Backup copies
+LegalNotion_Backup*
