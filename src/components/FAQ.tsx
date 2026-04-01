@@ -23,7 +23,7 @@ export default function FAQ({
     setOpenIndex((prev) => (prev === i ? null : i));
 
   return (
-    <section className="py-24 relative overflow-hidden bg-[linear-gradient(135deg,#fdf8f2_0%,#fef0e0_40%,#e8f5ee_100%)]">
+    <section className="py-16 sm:py-20 lg:py-24 relative overflow-hidden bg-[linear-gradient(135deg,#fdf8f2_0%,#fef0e0_40%,#e8f5ee_100%)]">
       {/* Decorative blobs */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-gold/5 blur-[120px]" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-primary/5 blur-[100px]" />

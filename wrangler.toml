@@ -1,0 +1,6 @@
+# Cloudflare Pages — deploy: npm run build && npm run deploy:pages
+# Or: npx wrangler pages deploy dist --project-name=legalnotion
+# Auth: run `npx wrangler login` locally, or set CLOUDFLARE_API_TOKEN (Pages: Edit).
+name = "legalnotion"
+compatibility_date = "2025-03-31"
+pages_build_output_dir = "dist"

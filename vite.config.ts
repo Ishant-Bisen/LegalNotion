@@ -6,5 +6,12 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     allowedHosts: true,
+    proxy: {
+      "/api": {
+        target: "https://api.legalnotion.in",
+        changeOrigin: true,
+        secure: true,
+      },
+    },
   },
 })

@@ -9,11 +9,11 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0">
+              <div className="w-19 h-19 rounded-xl shrink-0 overflow-hidden flex items-center justify-center">
                 <img
                   src="/logo.png"
                   alt="Legal Notion"
-                  className="w-full h-full object-cover scale-[2]"
+                  className="w-[220%] h-[220%] max-w-none object-contain translate-y-[4%]"
                 />
               </div>
               <div className="flex flex-col justify-center">
@@ -56,10 +56,12 @@ export default function Footer() {
               Practice Areas
             </h4>
             <ul className="space-y-2 text-sm text-white/90">
-              <li>Corporate Law</li>
-              <li>Civil Litigation</li>
-              <li>Intellectual Property</li>
-              <li>Real Estate</li>
+              <li>Business Incorporation (Pvt Ltd, LLP, OPC)</li>
+              <li>Compliance & Regulatory Support</li>
+              <li>Contract Drafting & Review</li>
+              <li>IP (Trademarks & Copyrights)</li>
+              <li>Fundraising & Due Diligence</li>
+              <li>Data Protection</li>
             </ul>
           </div>
 
@@ -71,17 +73,18 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-white/90">
               <li>
                 <a
-                  href="https://www.google.com/maps/search/Shree+Dhanlaxmi+Hanuman+Nagar+Wadarvadi+Pune+Maharashtra+411016"
+                  href="https://www.google.com/maps/search/Shivajinagar+Pune+Maharashtra+411005"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-gold transition-colors inline-flex items-start gap-1.5"
                 >
                   <span className="mt-0.5 shrink-0">📍</span>
-                  <span>Shree Dhanlaxmi Hanuman Nagar, Wadarvadi, Pune, Maharashtra 411016</span>
+                  <span>
+                    Shivajinagar, Pune, Maharashtra — 411005
+                  </span>
                 </a>
               </li>
               <li>info@legalnotion.com</li>
-              <li>(555) 123-4567</li>
             </ul>
           </div>
         </div>

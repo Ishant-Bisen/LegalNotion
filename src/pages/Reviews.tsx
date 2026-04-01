@@ -1,6 +1,16 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "../components/PageTransition";
+import { fetchReviews, createReview } from "../lib/api/reviews";
+import { mapReviewToUI, buildCreateReviewPayload } from "../lib/api/mappers";
+import { ApiError } from "../lib/api/client";
+import {
+  formatReviewsListError,
+  shouldTreatReviewsListAsEmpty,
+} from "../lib/api/reviewsLoad";
+import ApiAnimatedLoader, {
+  ApiLoaderOverlay,
+} from "../components/ApiAnimatedLoader";
 
 interface Reply {
   id: number;
@@ -20,111 +30,14 @@ interface Review {
   replies: Reply[];
 }
 
-const INITIAL_REVIEWS: Review[] = [
-  {
-    id: 1,
-    name: "Rajesh Mehta",
-    role: "Business Owner",
-    text: "Legal Notion handled our corporate restructuring flawlessly. Their attention to detail and strategic thinking saved us both time and money. The team was always available and responded promptly to all our queries.",
-    rating: 5,
-    date: "2026-02-15",
-    service: "Corporate Law",
-    replies: [
-      { id: 101, name: "Legal Notion Team", text: "Thank you so much, Rajesh! It was a pleasure working with you on the restructuring. We're glad the outcome exceeded expectations. Looking forward to supporting your business further!", date: "2026-02-16" },
-    ],
-  },
-  {
-    id: 2,
-    name: "Priya Sharma",
-    role: "Startup Founder",
-    text: "From IP registration to contract drafting, they guided us through every legal hurdle. Truly a partner you can rely on for the long term. Their affordable pricing made it possible for our startup to get premium legal support.",
-    rating: 5,
-    date: "2026-01-28",
-    service: "Intellectual Property",
-    replies: [
-      { id: 102, name: "Legal Notion Team", text: "We truly appreciate your kind words, Priya! Helping startups protect their innovations is one of our passions. Wishing you and your team all the best!", date: "2026-01-29" },
-    ],
-  },
-  {
-    id: 3,
-    name: "Amit Kapoor",
-    role: "Real Estate Developer",
-    text: "Their real estate team is exceptional. They closed a complex multi-party deal that other firms couldn't. Highly recommend their expertise. The documentation was thorough and the process was seamless.",
-    rating: 5,
-    date: "2026-01-10",
-    service: "Real Estate",
-    replies: [
-      { id: 103, name: "Legal Notion Team", text: "Thank you, Amit! That deal was indeed complex, and our team worked hard to make it happen. We're honored by your trust and recommendation!", date: "2026-01-11" },
-    ],
-  },
-  {
-    id: 4,
-    name: "Sneha Patel",
-    role: "HR Director",
-    text: "We engaged them for employment law compliance and were impressed by how thorough and proactive they were. Outstanding service throughout. They helped us draft policies that protect both the company and employees.",
-    rating: 4,
-    date: "2025-12-20",
-    service: "Employment Law",
-    replies: [
-      { id: 104, name: "Legal Notion Team", text: "Thank you for the wonderful feedback, Sneha! We're committed to helping companies build fair and compliant workplaces. It was great working with your HR team!", date: "2025-12-21" },
-    ],
-  },
-  {
-    id: 5,
-    name: "Vikram Singh",
-    role: "Tech Entrepreneur",
-    text: "Legal Notion's IP team protected our innovations at every stage. Their knowledge of technology law is unmatched in the industry. They also helped us with international patent filings efficiently.",
-    rating: 5,
-    date: "2025-12-05",
-    service: "Intellectual Property",
-    replies: [],
-  },
-  {
-    id: 6,
-    name: "Ananya Desai",
-    role: "Family Client",
-    text: "During a difficult family matter, they showed both legal brilliance and genuine compassion. I felt supported and well-represented at all times. Their sensitivity towards the situation was commendable.",
-    rating: 5,
-    date: "2025-11-18",
-    service: "Family Law",
-    replies: [
-      { id: 106, name: "Legal Notion Team", text: "Thank you for sharing your experience, Ananya. Family matters require a delicate touch, and we're glad we could provide that along with strong legal representation. Wishing you and your family the very best.", date: "2025-11-19" },
-    ],
-  },
-  {
-    id: 7,
-    name: "Karan Malhotra",
-    role: "Import/Export Business",
-    text: "Legal Notion helped us navigate complex international trade regulations with ease. Their expertise in compliance law saved us from potential penalties. Absolutely worth every rupee.",
-    rating: 5,
-    date: "2025-11-02",
-    service: "Compliance",
-    replies: [],
-  },
-  {
-    id: 8,
-    name: "Meera Joshi",
-    role: "Consumer Rights Activist",
-    text: "Filed a consumer complaint through them and the resolution was swift. They know the consumer courts inside out. Very professional and genuinely care about justice being served.",
-    rating: 4,
-    date: "2025-10-15",
-    service: "Consumer Protection",
-    replies: [
-      { id: 108, name: "Legal Notion Team", text: "Thank you, Meera! Consumer rights are close to our heart and we're glad we could get you a swift resolution. Keep fighting the good fight!", date: "2025-10-16" },
-    ],
-  },
-];
-
 const SERVICES = [
   "All",
-  "Corporate Law",
-  "Intellectual Property",
-  "Real Estate",
-  "Employment Law",
-  "Family Law",
-  "Compliance",
-  "Consumer Protection",
-  "Civil Litigation",
+  "Business Incorporation (Pvt Ltd, LLP, OPC)",
+  "Compliance & Regulatory Support",
+  "Contract Drafting & Review",
+  "Intellectual Property (Trademarks & Copyrights)",
+  "Fundraising & Due Diligence",
+  "Data Protection",
 ];
 
 const containerVariants = {
@@ -179,8 +92,69 @@ function formatDate(dateStr: string) {
   });
 }
 
+function ReviewsListEmptyState({ onWrite }: { onWrite: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 28 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, ease: "easeOut" }}
+      className="relative overflow-hidden rounded-3xl border border-gray-100/80 bg-linear-to-br from-slate-50/90 via-white to-[#fdf8f2] px-6 py-14 sm:px-10 sm:py-20 text-center shadow-[0_20px_60px_-24px_rgba(15,60,90,0.12)]"
+    >
+      <div
+        className="pointer-events-none absolute -top-28 left-1/2 h-56 w-56 -translate-x-1/2 rounded-full bg-gold/20 blur-3xl"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute -bottom-16 -right-12 h-44 w-44 rounded-full bg-primary/15 blur-3xl"
+        aria-hidden
+      />
+      <div className="relative">
+        <div className="mb-7 flex justify-center gap-1">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <motion.span
+              key={i}
+              className="text-2xl sm:text-3xl text-gold/40"
+              initial={{ opacity: 0, y: 12, scale: 0.6 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{
+                delay: 0.06 * i,
+                type: "spring",
+                stiffness: 260,
+                damping: 18,
+              }}
+              aria-hidden
+            >
+              ★
+            </motion.span>
+          ))}
+        </div>
+        <h3 className="font-heading text-2xl sm:text-3xl font-bold text-primary tracking-tight mb-3">
+          Your story can go first
+        </h3>
+        <p className="text-muted text-sm sm:text-base max-w-md mx-auto leading-relaxed mb-10">
+          There aren&apos;t any public reviews here yet. When clients share feedback, it
+          will show up for everyone. Take a minute to tell others about your experience
+          with Legal Notion.
+        </p>
+        <motion.button
+          type="button"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={onWrite}
+          className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-linear-to-r from-gold to-gold-light text-white font-semibold text-sm shadow-lg shadow-gold/25 hover:shadow-xl hover:shadow-gold/30 transition-shadow"
+        >
+          <span aria-hidden>✍️</span>
+          Write a review
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function Reviews() {
-  const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [reviewsError, setReviewsError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState("All");
   const [sortBy, setSortBy] = useState<"latest" | "highest" | "lowest">("latest");
   const [showForm, setShowForm] = useState(false);
@@ -194,9 +168,35 @@ export default function Reviews() {
   const [formRating, setFormRating] = useState(0);
   const [formText, setFormText] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+
+  const loadReviews = useCallback(async () => {
+    try {
+      setReviewsError(null);
+      const raw = await fetchReviews();
+      setReviews(raw.map(mapReviewToUI));
+    } catch (e) {
+      setReviews([]);
+      if (shouldTreatReviewsListAsEmpty(e)) {
+        setReviewsError(null);
+      } else {
+        setReviewsError(formatReviewsListError(e));
+      }
+    } finally {
+      setReviewsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadReviews();
+  }, [loadReviews]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilter, sortBy]);
 
   const filteredReviews = useMemo(() => {
-    setCurrentPage(1);
     let result =
       activeFilter === "All"
         ? [...reviews]
@@ -226,39 +226,47 @@ export default function Reviews() {
     return dist;
   }, [reviews]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formName || !formText || !formRating || !formService) return;
-
-    const newReview: Review = {
-      id: Date.now(),
-      name: formName,
-      role: formRole || "Client",
-      text: formText,
-      rating: formRating,
-      date: new Date().toISOString().split("T")[0],
-      service: formService,
-      replies: [],
-    };
-
-    setReviews((prev) => [newReview, ...prev]);
+    setSubmitError(null);
+    setReviewSubmitting(true);
+    try {
+      await createReview(
+        buildCreateReviewPayload({
+          name: formName,
+          role: formRole,
+          service: formService,
+          rating: formRating,
+          text: formText,
+        })
+      );
+    } catch (err) {
+      setSubmitError(
+        err instanceof ApiError ? err.message : "Could not submit review."
+      );
+      setReviewSubmitting(false);
+      return;
+    }
+    setReviewSubmitting(false);
     setFormName("");
     setFormRole("");
     setFormService("");
     setFormRating(0);
     setFormText("");
     setSubmitted(true);
+    void loadReviews();
     setTimeout(() => {
       setSubmitted(false);
       setShowForm(false);
-    }, 3000);
+    }, 2500);
   };
 
 
   return (
     <PageTransition>
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 overflow-hidden bg-linear-to-br from-primary via-secondary to-accent">
+      <section className="relative pt-28 pb-20 overflow-hidden bg-linear-to-br from-primary via-secondary to-accent">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(224,133,48,0.12),transparent_60%)]" />
         <motion.div
           animate={{ rotate: 360 }}
@@ -290,8 +298,54 @@ export default function Reviews() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-12 max-w-3xl mx-auto bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-8"
+            className="mt-12 max-w-3xl mx-auto bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-8 min-h-[200px]"
           >
+            {reviewsLoading ? (
+              <div className="flex flex-col items-center justify-center gap-4 py-6">
+                <div className="flex gap-2">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <motion.span
+                      key={i}
+                      className="w-2.5 h-2.5 rounded-full bg-gold"
+                      animate={{ y: [0, -10, 0], opacity: [0.4, 1, 0.4] }}
+                      transition={{
+                        duration: 0.7,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: i * 0.1,
+                      }}
+                    />
+                  ))}
+                </div>
+                <p className="text-white/80 text-sm font-medium tracking-wide">
+                  Syncing reviews…
+                </p>
+              </div>
+            ) : reviews.length === 0 ? (
+              <div className="text-center py-2 sm:py-4 px-2">
+                <div className="flex justify-center gap-1 mb-5">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <motion.span
+                      key={s}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.05 * s }}
+                      className="text-2xl sm:text-3xl text-gold/50"
+                      aria-hidden
+                    >
+                      ★
+                    </motion.span>
+                  ))}
+                </div>
+                <p className="font-heading text-xl sm:text-2xl font-semibold text-white mb-2">
+                  Ratings will appear here
+                </p>
+                <p className="text-white/75 text-sm max-w-md mx-auto leading-relaxed">
+                  We don&apos;t show a score until real clients have shared feedback. Be
+                  the first to help others choose with confidence.
+                </p>
+              </div>
+            ) : (
             <div className="grid sm:grid-cols-2 gap-8 items-center">
               {/* Left — Overall Rating */}
               <div className="text-center sm:text-left">
@@ -338,6 +392,7 @@ export default function Reviews() {
                 })}
               </div>
             </div>
+            )}
           </motion.div>
         </div>
       </section>
@@ -345,9 +400,34 @@ export default function Reviews() {
       {/* Reviews Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Controls Bar */}
+          {reviewsLoading ? (
+            <ApiAnimatedLoader message="Loading reviews…" />
+          ) : (
+            <>
+          {reviewsError && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-2xl border border-rose-100/80 bg-linear-to-r from-rose-50/95 via-white to-amber-50/50 px-5 py-4 shadow-sm"
+            >
+              <p className="text-sm text-rose-900/85 leading-relaxed max-w-2xl">
+                {reviewsError}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setReviewsLoading(true);
+                  void loadReviews();
+                }}
+                className="shrink-0 rounded-full border border-rose-200/90 bg-white px-5 py-2.5 text-sm font-semibold text-rose-900 shadow-sm hover:bg-rose-50/80 transition-colors"
+              >
+                Try again
+              </button>
+            </motion.div>
+          )}
+
+          {reviews.length > 0 ? (
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
-            {/* Service filter pills */}
             <div className="flex flex-wrap gap-2">
               {SERVICES.map((s) => (
                 <button
@@ -365,7 +445,6 @@ export default function Reviews() {
             </div>
 
             <div className="flex items-center gap-3">
-              {/* Sort */}
               <select
                 value={sortBy}
                 onChange={(e) =>
@@ -378,7 +457,6 @@ export default function Reviews() {
                 <option value="lowest">Lowest Rated</option>
               </select>
 
-              {/* Write Review Button */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -389,6 +467,11 @@ export default function Reviews() {
               </motion.button>
             </div>
           </div>
+          ) : (
+            <div className="mb-12">
+              <ReviewsListEmptyState onWrite={() => setShowForm(true)} />
+            </div>
+          )}
 
           {/* Review Form */}
           <AnimatePresence>
@@ -401,6 +484,10 @@ export default function Reviews() {
                 className="overflow-hidden mb-12"
               >
                 <div className="relative rounded-2xl border border-gray-100 shadow-lg overflow-hidden bg-[linear-gradient(135deg,#fdf8f2_0%,#fef0e0_40%,#e8f5ee_100%)]">
+                  <ApiLoaderOverlay
+                    show={reviewSubmitting}
+                    message="Posting your review…"
+                  />
                   <div className="absolute top-0 right-0 w-[200px] h-[200px] rounded-full bg-gold/5 blur-[80px]" />
                   <div className="absolute bottom-0 left-0 w-[180px] h-[180px] rounded-full bg-primary/5 blur-[60px]" />
 
@@ -425,6 +512,11 @@ export default function Reviews() {
                       </motion.div>
                     ) : (
                       <form onSubmit={handleSubmit} className="space-y-5">
+                        {submitError && (
+                          <p className="text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2">
+                            {submitError}
+                          </p>
+                        )}
                         <div className="grid sm:grid-cols-2 gap-5">
                           <div>
                             <label className="block text-sm font-medium text-primary mb-1.5">
@@ -499,11 +591,12 @@ export default function Reviews() {
                         <div className="flex items-center gap-4">
                           <motion.button
                             type="submit"
-                            whileHover={{ scale: 1.03 }}
-                            whileTap={{ scale: 0.97 }}
-                            className="px-8 py-3 bg-primary text-white font-semibold rounded-full shadow-md hover:shadow-lg transition-shadow"
+                            disabled={reviewSubmitting}
+                            whileHover={{ scale: reviewSubmitting ? 1 : 1.03 }}
+                            whileTap={{ scale: reviewSubmitting ? 1 : 0.97 }}
+                            className="px-8 py-3 bg-primary text-white font-semibold rounded-full shadow-md hover:shadow-lg transition-shadow disabled:opacity-60"
                           >
-                            Submit Review
+                            {reviewSubmitting ? "Submitting…" : "Submit Review"}
                           </motion.button>
                           <button
                             type="button"
@@ -521,6 +614,8 @@ export default function Reviews() {
             )}
           </AnimatePresence>
 
+          {reviews.length > 0 && (
+          <>
           {/* Reviews Grid */}
           <motion.div
             key={currentPage}
@@ -646,13 +741,22 @@ export default function Reviews() {
             ))}
           </motion.div>
 
-          {filteredReviews.length === 0 && (
-            <div className="text-center py-16">
-              <span className="text-4xl block mb-4">📭</span>
-              <p className="text-muted text-lg">
-                No reviews found for this category yet.
+          {filteredReviews.length === 0 && reviews.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-16 rounded-2xl border border-dashed border-gray-200 bg-gray-50/50"
+            >
+              <span className="text-4xl block mb-4" aria-hidden>
+                📭
+              </span>
+              <p className="text-muted text-lg font-medium">
+                No reviews in this category yet.
               </p>
-            </div>
+              <p className="text-muted text-sm mt-2 max-w-sm mx-auto">
+                Try another filter or check back soon.
+              </p>
+            </motion.div>
           )}
 
           {/* Pagination */}
@@ -701,6 +805,10 @@ export default function Reviews() {
                 Page {currentPage} of {totalPages}
               </span>
             </div>
+          )}
+          </>
+          )}
+            </>
           )}
         </div>
       </section>

@@ -1,30 +1,20 @@
 import { motion } from "framer-motion";
+import { NavLink } from "react-router-dom";
 import PageTransition from "../components/PageTransition";
 
-const team = [
+/** Themes from our founding story — used below the hero. */
+const storyPillars = [
   {
-    name: "Sarah Mitchell",
-    role: "Managing Partner",
-    bio: "20+ years in corporate law and mergers.",
-    initials: "SM",
+    title: "Simple, not intimidating",
+    desc: "Legal support shouldn’t feel complicated, slow, or scary—especially when you’re building something new.",
   },
   {
-    name: "James Richardson",
-    role: "Senior Partner",
-    bio: "Expert in civil litigation and dispute resolution.",
-    initials: "JR",
+    title: "Built for how founders work",
+    desc: "We saw teams lose hours on compliance, get unclear advice, or skip steps—not from lack of care, but because the system wasn’t built for them.",
   },
   {
-    name: "Elena Torres",
-    role: "Associate Partner",
-    bio: "Specializes in IP and technology law.",
-    initials: "ET",
-  },
-  {
-    name: "Michael Chang",
-    role: "Senior Associate",
-    bio: "Real estate and property law specialist.",
-    initials: "MC",
+    title: "So we changed the model",
+    desc: "Clear guidance, practical processes, and counsel that respects your pace—from first incorporation to scale.",
   },
 ];
 
@@ -55,7 +45,7 @@ export default function About() {
   return (
     <PageTransition>
       {/* Hero */}
-      <section className="pt-32 pb-20 bg-linear-to-br from-primary via-secondary to-accent relative overflow-hidden">
+      <section className="pt-28 pb-20 bg-linear-to-br from-primary via-secondary to-accent relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(200,169,81,0.1),transparent_60%)]" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.span
@@ -63,25 +53,85 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}
             className="text-gold text-sm font-semibold uppercase tracking-widest"
           >
-            Our Story
+            About Us
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="font-heading text-4xl sm:text-5xl font-bold text-white mt-4 mb-6"
+            className="font-heading text-4xl sm:text-5xl font-bold text-white mt-4 mb-8 max-w-4xl mx-auto text-pretty leading-tight"
           >
-            About Legal Notion
+            We simplify legal for those building the future
           </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-white/95 text-lg max-w-2xl mx-auto"
+          <div className="max-w-3xl mx-auto space-y-6 text-left sm:text-center">
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              className="text-white/95 text-lg sm:text-xl leading-relaxed text-pretty"
+            >
+              LegalNotion was started with a simple belief—legal support
+              shouldn&apos;t feel complicated, slow, or intimidating, especially
+              for startups.
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              className="text-white/90 text-base sm:text-lg leading-relaxed text-pretty"
+            >
+              We saw founders spending countless hours trying to understand
+              compliance, struggling with unclear legal advice, or avoiding
+              important legal steps altogether. Not because they didn&apos;t
+              care—but because the system wasn&apos;t built for them.
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45 }}
+              className="text-white text-lg sm:text-xl font-semibold leading-relaxed text-pretty"
+            >
+              So, we decided to change that.
+            </motion.p>
+          </div>
+        </div>
+      </section>
+
+      {/* Story pillars — same narrative, scannable on the page */}
+      <section className="py-20 sm:py-24 bg-light">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center max-w-2xl mx-auto mb-12 sm:mb-16"
           >
-            Founded on the principles of justice and dedication, we have been
-            serving clients with distinction for over four years.
-          </motion.p>
+            <span className="text-gold text-sm font-semibold uppercase tracking-widest">
+              Why we&apos;re here
+            </span>
+            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-primary mt-3 text-pretty">
+              The same belief runs through everything we do at LegalNotion
+            </h2>
+          </motion.div>
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+            {storyPillars.map((block, i) => (
+              <motion.div
+                key={block.title}
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08, duration: 0.45 }}
+                className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-md hover:border-gold/25 hover:shadow-lg transition-all duration-300"
+              >
+                <h3 className="font-heading font-semibold text-primary text-lg mb-3">
+                  {block.title}
+                </h3>
+                <p className="text-muted text-sm leading-relaxed text-pretty">
+                  {block.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -99,19 +149,19 @@ export default function About() {
                 Our Mission
               </span>
               <h2 className="font-heading text-3xl sm:text-4xl font-bold text-primary mt-3 mb-6">
-                Championing Justice,{" "}
-                <span className="text-gold">Empowering Clients</span>
+                Legal that fits{" "}
+                <span className="text-gold">how you build</span>
               </h2>
               <p className="text-muted leading-relaxed mb-6">
-                At Legal Notion, we believe that access to quality legal
-                representation is a fundamental right. Our team of dedicated
-                attorneys combines deep legal knowledge with a compassionate,
-                client-centered approach.
+                When we said we&apos;d change how legal feels for founders, we
+                meant it: today LegalNotion focuses on clear guidance, practical
+                processes, and counsel that respects your pace—whether you&apos;re
+                incorporating, fundraising, or scaling.
               </p>
               <p className="text-muted leading-relaxed">
-                We leverage cutting-edge legal research and technology to deliver
-                efficient, effective outcomes. Every case we take is treated
-                with the gravity and focus it deserves.
+                We combine sound legal judgment with modern tools so compliance
+                and contracts don&apos;t slow you down. Every engagement is built
+                around transparency, responsiveness, and outcomes you can act on.
               </p>
             </motion.div>
 
@@ -146,52 +196,45 @@ export default function About() {
         </div>
       </section>
 
-      {/* Team */}
+      {/* People & careers — no placeholder bios; real profiles can be added when available */}
       <section className="py-24 bg-light">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
           >
             <span className="text-gold text-sm font-semibold uppercase tracking-widest">
               Our People
             </span>
-            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-primary mt-3">
-              Meet the Team
+            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-primary mt-3 mb-6">
+              Work With Us
             </h2>
-          </motion.div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, i) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.12, duration: 0.5 }}
-                whileHover={{ y: -8 }}
-                className="group bg-white rounded-2xl p-6 text-center shadow-md hover:shadow-2xl hover:shadow-gold/10 border border-gray-100 hover:border-gold/20 transition-all duration-500"
-              >
-                <motion.div
-                  whileHover={{ scale: 1.05, rotate: 3 }}
-                  className="w-20 h-20 rounded-full bg-linear-to-br from-primary to-accent mx-auto mb-4 flex items-center justify-center"
+            <p className="text-muted leading-relaxed mb-8">
+              LegalNotion is built by advocates and operators who care about
+              startups and growing businesses—not just filings on a shelf. We
+              are always interested in hearing from talented legal professionals
+              who share that mindset.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                <NavLink
+                  to="/careers"
+                  className="inline-flex px-8 py-3 rounded-full bg-primary text-white font-semibold shadow-md hover:shadow-lg transition-shadow"
                 >
-                  <span className="text-gold font-heading font-bold text-xl">
-                    {member.initials}
-                  </span>
-                </motion.div>
-                <h3 className="font-heading font-semibold text-primary text-lg">
-                  {member.name}
-                </h3>
-                <p className="text-gold text-sm font-medium mb-2">
-                  {member.role}
-                </p>
-                <p className="text-muted text-sm">{member.bio}</p>
+                  Apply on Careers
+                </NavLink>
               </motion.div>
-            ))}
-          </div>
+              <motion.a
+                href="mailto:info@legalnotion.com"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-flex px-8 py-3 rounded-full border-2 border-primary text-primary font-semibold hover:bg-primary/5 transition-colors"
+              >
+                Email us
+              </motion.a>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -206,14 +249,15 @@ export default function About() {
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(200,169,81,0.15),transparent_60%)]" />
             <div className="relative">
-              <h2 className="font-heading text-3xl sm:text-4xl font-bold text-white mb-4">
-                Let's Talk About Your Case
+              <h2 className="font-heading text-3xl sm:text-4xl font-bold text-white mb-4 text-pretty">
+                Let&apos;s talk about what you&apos;re building
               </h2>
-              <p className="text-white/95 mb-8 max-w-lg mx-auto">
-                Reach out for a confidential, no-obligation consultation with
-                one of our experienced attorneys.
+              <p className="text-white/95 mb-8 max-w-lg mx-auto leading-relaxed text-pretty">
+                Whether you&apos;re at idea stage or scaling, we&apos;re here to
+                make legal straightforward—not a bottleneck. Reach out for a
+                confidential, no-obligation conversation.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex justify-center">
                 <motion.a
                   href="mailto:info@legalnotion.com"
                   whileHover={{ scale: 1.05 }}
@@ -221,14 +265,6 @@ export default function About() {
                   className="px-8 py-4 bg-white text-primary font-semibold rounded-full shadow-lg"
                 >
                   Email Us
-                </motion.a>
-                <motion.a
-                  href="tel:+15551234567"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="px-8 py-4 border border-white/20 text-white font-semibold rounded-full hover:bg-white/5 transition-colors"
-                >
-                  Call (555) 123-4567
                 </motion.a>
               </div>
             </div>

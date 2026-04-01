@@ -1,160 +1,80 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "../components/PageTransition";
-
-interface Post {
-  category: string;
-  title: string;
-  excerpt: string;
-  date: string;
-  readTime: string;
-  image: string;
-  tags: string[];
-}
-
-const allPosts: Post[] = [
-  {
-    category: "Corporate",
-    title: "Navigating Mergers & Acquisitions in 2026",
-    excerpt:
-      "Key legal considerations every business owner should know before entering an M&A transaction in today's evolving market landscape.",
-    date: "Mar 20, 2026",
-    readTime: "5 min read",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop",
-    tags: ["Corporate", "M&A", "Business"],
-  },
-  {
-    category: "IP Law",
-    title: "Protecting Your Brand in the Digital Age",
-    excerpt:
-      "How trademark and copyright laws are adapting to emerging technologies and online platforms globally.",
-    date: "Mar 15, 2026",
-    readTime: "4 min read",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop",
-    tags: ["IP Law", "Trademark", "Technology"],
-  },
-  {
-    category: "Employment",
-    title: "Remote Work Policies: Legal Frameworks",
-    excerpt:
-      "Understanding the legal implications of remote and hybrid work arrangements for modern employers.",
-    date: "Mar 10, 2026",
-    readTime: "6 min read",
-    image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=600&h=400&fit=crop",
-    tags: ["Employment", "Remote Work", "Compliance"],
-  },
-  {
-    category: "Real Estate",
-    title: "Commercial Lease Negotiations: A Guide",
-    excerpt:
-      "Essential clauses and strategies for negotiating favorable commercial lease agreements in India.",
-    date: "Mar 5, 2026",
-    readTime: "7 min read",
-    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&h=400&fit=crop",
-    tags: ["Real Estate", "Leasing", "Commercial"],
-  },
-  {
-    category: "Litigation",
-    title: "Alternative Dispute Resolution Benefits",
-    excerpt:
-      "Why mediation and arbitration are becoming the preferred methods for resolving business disputes.",
-    date: "Feb 28, 2026",
-    readTime: "5 min read",
-    image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&h=400&fit=crop",
-    tags: ["Litigation", "Arbitration", "Mediation"],
-  },
-  {
-    category: "Family Law",
-    title: "Estate Planning Essentials for Families",
-    excerpt:
-      "Protect your family's future with these critical estate planning steps and important considerations.",
-    date: "Feb 22, 2026",
-    readTime: "4 min read",
-    image: "https://images.unsplash.com/photo-1450101499163-c8848e968838?w=600&h=400&fit=crop",
-    tags: ["Family Law", "Estate", "Planning"],
-  },
-  {
-    category: "Corporate",
-    title: "Startup Legal Checklist: What Founders Need",
-    excerpt:
-      "A comprehensive legal checklist every startup founder should follow before launching their business.",
-    date: "Feb 18, 2026",
-    readTime: "6 min read",
-    image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=600&h=400&fit=crop",
-    tags: ["Corporate", "Startup", "Business"],
-  },
-  {
-    category: "IP Law",
-    title: "Patent Filing Process Simplified",
-    excerpt:
-      "Step-by-step guide to filing a patent in India — timelines, costs, and common pitfalls to avoid.",
-    date: "Feb 12, 2026",
-    readTime: "8 min read",
-    image: "https://images.unsplash.com/photo-1532619675605-1ede6c2ed2b0?w=600&h=400&fit=crop",
-    tags: ["IP Law", "Patent", "Innovation"],
-  },
-  {
-    category: "Litigation",
-    title: "Understanding Civil Court Procedures in India",
-    excerpt:
-      "A practical overview of the civil litigation process — from filing to final judgment in Indian courts.",
-    date: "Feb 5, 2026",
-    readTime: "7 min read",
-    image: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=600&h=400&fit=crop",
-    tags: ["Litigation", "Civil Law", "Court"],
-  },
-  {
-    category: "Employment",
-    title: "Employee Rights Under Indian Labour Laws",
-    excerpt:
-      "Key protections and benefits every employee in India is entitled to under current labour legislation.",
-    date: "Jan 28, 2026",
-    readTime: "5 min read",
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=400&fit=crop",
-    tags: ["Employment", "Labour Law", "Rights"],
-  },
-  {
-    category: "Real Estate",
-    title: "RERA: Protecting Home Buyers in India",
-    excerpt:
-      "How the Real Estate Regulatory Authority safeguards buyers and brings transparency to property deals.",
-    date: "Jan 20, 2026",
-    readTime: "6 min read",
-    image: "https://images.unsplash.com/photo-1582407947092-409862f68b9e?w=600&h=400&fit=crop",
-    tags: ["Real Estate", "RERA", "Property"],
-  },
-  {
-    category: "Family Law",
-    title: "Child Custody Laws: What Parents Must Know",
-    excerpt:
-      "Navigating custody disputes in India — legal framework, types of custody, and best interests of the child.",
-    date: "Jan 14, 2026",
-    readTime: "5 min read",
-    image: "https://images.unsplash.com/photo-1491013516836-7db643ee125a?w=600&h=400&fit=crop",
-    tags: ["Family Law", "Custody", "Children"],
-  },
-];
-
-const allTags = Array.from(new Set(allPosts.flatMap((p) => p.tags)));
+import { fetchBlogs } from "../lib/api/blogs";
+import { mapBlogToCard, type BlogCardModel } from "../lib/api/mappers";
+import {
+  formatBlogsListError,
+  shouldTreatPublicListAsEmpty,
+} from "../lib/api/reviewsLoad";
+import ApiAnimatedLoader from "../components/ApiAnimatedLoader";
 
 const categoryColors: Record<string, string> = {
   Corporate: "bg-orange-50 text-orange-800",
   "IP Law": "bg-amber-50 text-amber-800",
-  Employment: "bg-yellow-50 text-yellow-800",
-  "Real Estate": "bg-rose-50 text-rose-800",
+  "Business Incorporation (Pvt Ltd, LLP, OPC)": "bg-emerald-50 text-emerald-900",
+  "Compliance & Regulatory Support": "bg-sky-50 text-sky-900",
+  "Contract Drafting & Review": "bg-violet-50 text-violet-900",
+  "Intellectual Property (Trademarks & Copyrights)": "bg-amber-50 text-amber-900",
+  "Fundraising & Due Diligence": "bg-teal-50 text-teal-900",
+  "Data Protection": "bg-indigo-50 text-indigo-900",
+  Compliance: "bg-sky-50 text-sky-900",
+  Contracts: "bg-violet-50 text-violet-900",
+  Fundraising: "bg-teal-50 text-teal-900",
   Litigation: "bg-red-50 text-red-800",
-  "Family Law": "bg-stone-100 text-stone-700",
 };
 
 const POSTS_PER_PAGE = 6;
 
 export default function Blogs() {
+  const [posts, setPosts] = useState<BlogCardModel[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [page, setPage] = useState(1);
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        setLoading(true);
+        setLoadError(null);
+        const raw = await fetchBlogs();
+        if (cancelled) return;
+        const mapped = raw.map(mapBlogToCard).filter((p) => p.title);
+        setPosts(mapped);
+      } catch (e) {
+        if (!cancelled) {
+          setPosts([]);
+          if (shouldTreatPublicListAsEmpty(e)) {
+            setLoadError(null);
+          } else {
+            setLoadError(formatBlogsListError(e));
+          }
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const allTags = useMemo(
+    () => Array.from(new Set(posts.flatMap((p) => p.tags))),
+    [posts]
+  );
+
+  /** Featured uses posts[0]; list shows the rest (or nothing if only one article). */
+  const postsForList = useMemo(() => {
+    if (posts.length <= 1) return [];
+    return posts.slice(1);
+  }, [posts]);
+
   const filtered = useMemo(() => {
-    let result = allPosts;
+    let result = postsForList;
     if (activeTag) {
       result = result.filter((p) => p.tags.includes(activeTag));
     }
@@ -168,7 +88,7 @@ export default function Blogs() {
       );
     }
     return result;
-  }, [search, activeTag]);
+  }, [postsForList, search, activeTag]);
 
   const totalPages = Math.ceil(filtered.length / POSTS_PER_PAGE);
   const paged = filtered.slice(
@@ -189,7 +109,7 @@ export default function Blogs() {
   return (
     <PageTransition>
       {/* Hero */}
-      <section className="pt-32 pb-20 bg-linear-to-br from-primary via-secondary to-accent relative overflow-hidden">
+      <section className="pt-28 pb-20 bg-linear-to-br from-primary via-secondary to-accent relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(200,169,81,0.08),transparent_60%)]" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.span
@@ -283,7 +203,7 @@ export default function Blogs() {
                         Matching blogs
                       </p>
                       <div className="flex flex-col gap-1">
-                        {allPosts
+                        {posts
                           .filter(
                             (p) =>
                               p.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -295,7 +215,7 @@ export default function Blogs() {
                           .slice(0, 5)
                           .map((post) => (
                             <button
-                              key={post.title}
+                              key={post.id || post.title}
                               onClick={() => {
                                 setSearch(post.title);
                                 setPage(1);
@@ -317,7 +237,7 @@ export default function Blogs() {
                               </div>
                             </button>
                           ))}
-                        {allPosts.filter(
+                        {posts.filter(
                           (p) =>
                             p.title.toLowerCase().includes(search.toLowerCase()) ||
                             p.category.toLowerCase().includes(search.toLowerCase()) ||
@@ -365,52 +285,60 @@ export default function Blogs() {
         </div>
       </section>
 
-      {/* Featured Post */}
-      <section className="pt-16 pb-8 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            whileHover={{ y: -5 }}
-            className="group grid md:grid-cols-2 gap-0 bg-linear-to-br from-primary to-accent rounded-3xl relative overflow-hidden cursor-pointer shadow-lg"
-          >
-            <div className="relative h-64 md:h-auto">
-              <img
-                src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=600&fit=crop"
-                alt="Featured blog"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-linear-to-r from-primary/60 to-transparent md:hidden" />
-            </div>
-            <div className="p-8 sm:p-12 flex flex-col justify-center">
-              <span className="inline-block w-fit px-3 py-1 rounded-full bg-gold/20 text-gold text-xs font-semibold mb-4">
-                Featured
-              </span>
-              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-4 group-hover:text-gold transition-colors duration-300">
-                The Future of Legal Tech: AI and Automation in Law Practice
-              </h2>
-              <p className="text-white/90 leading-relaxed mb-6 text-sm">
-                Exploring how artificial intelligence is transforming legal
-                research, contract analysis, and case prediction — and what it
-                means for the future of legal services.
-              </p>
-              <div className="flex items-center gap-4 text-white/70 text-sm">
-                <span>Mar 25, 2026</span>
-                <span>•</span>
-                <span>8 min read</span>
-              </div>
-            </div>
-            <motion.div className="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-gold to-gold-light origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
-          </motion.div>
+      {loadError && (
+        <div className="bg-amber-50 border-b border-amber-100 text-amber-900 text-center text-sm py-3 px-4">
+          {loadError}
         </div>
-      </section>
+      )}
+
+      {/* Featured Post — first item from API */}
+      {!loading && posts.length > 0 && (
+        <section className="pt-16 pb-8 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              whileHover={{ y: -5 }}
+              className="group grid md:grid-cols-2 gap-0 bg-linear-to-br from-primary to-accent rounded-3xl relative overflow-hidden shadow-lg"
+            >
+              <div className="relative h-64 md:h-auto">
+                <img
+                  src={posts[0].image}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-linear-to-r from-primary/60 to-transparent md:hidden" />
+              </div>
+              <div className="p-8 sm:p-12 flex flex-col justify-center">
+                <span className="inline-block w-fit px-3 py-1 rounded-full bg-gold/20 text-gold text-xs font-semibold mb-4">
+                  Featured
+                </span>
+                <h2 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-4 group-hover:text-gold transition-colors duration-300">
+                  {posts[0].title}
+                </h2>
+                <p className="text-white/90 leading-relaxed mb-6 text-sm line-clamp-4">
+                  {posts[0].excerpt}
+                </p>
+                <div className="flex items-center gap-4 text-white/70 text-sm">
+                  <span>{posts[0].date}</span>
+                  <span>•</span>
+                  <span>{posts[0].readTime}</span>
+                </div>
+              </div>
+              <motion.div className="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-gold to-gold-light origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Posts Grid */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {filtered.length === 0 ? (
+          {loading ? (
+            <ApiAnimatedLoader message="Fetching articles…" />
+          ) : filtered.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -421,7 +349,9 @@ export default function Blogs() {
                 No blogs found
               </h3>
               <p className="text-muted text-sm">
-                Try a different search term or clear the filters.
+                {posts.length === 0
+                  ? "No articles are available yet."
+                  : "Try a different search term or clear the filters."}
               </p>
             </motion.div>
           ) : (
@@ -437,7 +367,7 @@ export default function Blogs() {
                 >
                   {paged.map((post, i) => (
                     <motion.article
-                      key={post.title}
+                      key={post.id || post.title}
                       initial={{ opacity: 0, y: 40 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
