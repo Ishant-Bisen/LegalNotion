@@ -1,16 +1,31 @@
-# Dependencies
-node_modules
+# ─── Dependencies ─────────────────────────────────────────
+node_modules/
 
-# Build output
-dist
-dist-ssr
+# ─── Build & tooling output ───────────────────────────────
+dist/
+dist-ssr/
+build/
+*.tsbuildinfo
+.eslintcache
+.vite/
+.turbo/
+.cache/
+.parcel-cache/
+coverage/
+*.lcov
 
-# Environment variables
+# ─── Environment & secrets (never commit) ─────────────────
 .env
-.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+# Allow a checked-in template for teammates / CI
+!.env.example
 
-# Logs
-logs
+# ─── Logs ─────────────────────────────────────────────────
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -18,27 +33,50 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Local overrides
+# ─── Local / machine-specific ─────────────────────────────
 *.local
+*.bak
+*.backup
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
 
-# Editor directories and files
+# ─── Editor & IDE ───────────────────────────────────────
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-.cursor
+.cursor/
 
-# OS files
+# ─── OS junk ──────────────────────────────────────────────
 .DS_Store
+.DS_Store?
+._*
 Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
 desktop.ini
+$RECYCLE.BIN/
 
-# Cloudflare tunnel binary
+# ─── Cloudflare / tunnels (binaries & local state) ───────
 cloudflared.exe
+cloudflared
+.wrangler/
+.dev.vars
+.mf/
 
-# Backup copies
+# ─── Archives & one-off backups (keep repo lean) ─────────
+*.zip
+*.tar
+*.tar.gz
+*.tgz
 LegalNotion_Backup*
+*_backup/
+*_Backup/
