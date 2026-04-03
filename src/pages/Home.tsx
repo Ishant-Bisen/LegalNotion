@@ -860,9 +860,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Scroll indicator — static; no bounce animation */}
+        {/* Scroll indicator — desktop/tablet only (hidden on mobile) */}
         <div
-          className="absolute bottom-7 sm:bottom-10 left-1/2 -translate-x-1/2 z-10 flex justify-center pointer-events-none"
+          className="absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 justify-center pointer-events-none sm:bottom-10 md:flex"
           aria-hidden
         >
           <div className="w-6 h-10 rounded-full border-2 border-white/90 flex justify-center pt-2 shadow-[0_0_12px_rgba(255,255,255,0.25)]">
