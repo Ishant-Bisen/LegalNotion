@@ -1,40 +1,54 @@
 import { motion } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
+import {
+  Building2,
+  FileText,
+  Lightbulb,
+  Scale,
+  Shield,
+  TrendingUp,
+} from "lucide-react";
 import PageTransition from "../components/PageTransition";
 import FAQ from "../components/FAQ";
 
-const services = [
+const services: {
+  icon: LucideIcon;
+  title: string;
+  desc: string;
+  areas: string[];
+}[] = [
   {
-    icon: "🏢",
+    icon: Building2,
     title: "Business Incorporation (Pvt Ltd, LLP, OPC)",
-    desc: "End-to-end setup for private limited companies, LLPs, and one-person companies — from name approval to ROC filings and post-incorporation compliance.",
+    desc: "End-to-end setup for private limited companies, LLPs, and one-person companies - from name approval to ROC filings and post-incorporation compliance.",
     areas: ["Pvt Ltd incorporation", "LLP registration", "OPC & conversions"],
   },
   {
-    icon: "⚖️",
+    icon: Scale,
     title: "Compliance & Regulatory Support",
     desc: "Ongoing regulatory filings, statutory registers, board documentation, and liaison with authorities so your entity stays audit-ready.",
     areas: ["ROC & MCA filings", "Secretarial compliance", "Regulatory advisory"],
   },
   {
-    icon: "📄",
+    icon: FileText,
     title: "Contract Drafting & Review",
-    desc: "Clear, enforceable agreements tailored to your deals — from founder arrangements to vendor and customer contracts.",
+    desc: "Clear, enforceable agreements tailored to your deals - from founder arrangements to vendor and customer contracts.",
     areas: ["Commercial agreements", "NDAs & MSAs", "Employment & ESOP docs"],
   },
   {
-    icon: "💡",
+    icon: Lightbulb,
     title: "Intellectual Property (Trademarks & Copyrights)",
     desc: "Protection and enforcement for your brand and creative work across India, including filings, oppositions, and licensing.",
     areas: ["Trademark search & filing", "Copyright registration", "Licensing & assignments"],
   },
   {
-    icon: "📈",
+    icon: TrendingUp,
     title: "Fundraising & Due Diligence",
     desc: "Support through investment rounds: data room prep, term sheet review, cap table hygiene, and investor due diligence.",
     areas: ["Seed to Series A", "DD checklists", "SHA & SAFE review"],
   },
   {
-    icon: "🔐",
+    icon: Shield,
     title: "Data Protection",
     desc: "Privacy policies, data processing agreements, and alignment with India’s data protection framework for products and internal processes.",
     areas: ["Privacy notices", "DPA / vendor terms", "DPDP readiness"],
@@ -83,7 +97,7 @@ export default function Services() {
             transition={{ delay: 0.3 }}
             className="text-white/95 text-lg max-w-2xl mx-auto"
           >
-            Corporate and regulatory support for founders and growing businesses —
+            Corporate and regulatory support for founders and growing businesses  - 
             from incorporation to fundraising and data compliance.
           </motion.p>
         </div>
@@ -99,7 +113,9 @@ export default function Services() {
             viewport={{ once: true, margin: "-100px" }}
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            {services.map((s) => (
+            {services.map((s) => {
+              const ServiceIcon = s.icon;
+              return (
               <motion.div
                 key={s.title}
                 variants={cardVariants}
@@ -114,9 +130,13 @@ export default function Services() {
                 <div className="relative">
                   <motion.div
                     whileHover={{ rotate: 10, scale: 1.1 }}
-                    className="w-16 h-16 rounded-2xl bg-gold/10 flex items-center justify-center text-3xl mb-6 group-hover:bg-gold/20 transition-colors"
+                    className="w-16 h-16 rounded-2xl bg-gold/10 flex items-center justify-center mb-6 group-hover:bg-gold/20 transition-colors"
                   >
-                    {s.icon}
+                    <ServiceIcon
+                      className="h-8 w-8 text-gold"
+                      strokeWidth={1.65}
+                      aria-hidden
+                    />
                   </motion.div>
 
                   <h3 className="font-heading text-xl font-semibold text-primary mb-3">
@@ -140,7 +160,8 @@ export default function Services() {
 
                 <motion.div className="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-gold to-gold-light origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-b-2xl" />
               </motion.div>
-            ))}
+            );
+            })}
           </motion.div>
         </div>
       </section>
@@ -199,34 +220,34 @@ export default function Services() {
         title="Questions About Our Services"
         items={[
           {
-            question: "How do I know which legal service I need?",
+            question: "How do I know which service I need first?",
             answer:
-              "Start with a free consultation. We’ll map your stage — incorporation, contracts, compliance, IP, fundraising, or privacy — and recommend a focused plan.",
+              "Tell us your stage: idea-only, incorporating, already operating, raising funds, or scaling compliance. We’ll prioritise - usually entity setup (Pvt Ltd / LLP / OPC), then contracts and GST/compliance basics, then trademark if you’re building a brand. One conversation maps the sequence.",
           },
           {
-            question: "Do you work with startups and small businesses?",
+            question: "Do you handle company registration and trademarks together?",
             answer:
-              "Yes. Our practice is built around founders and growing companies: entity setup, day-to-day contracts, regulatory upkeep, and investor readiness.",
+              "Yes. Incorporation (name approval, MoA/AoA, PAN, opening compliance) and trademark search, filing, and basic copyright work are core offerings. We often run them in parallel once the company name and brand direction are clear.",
           },
           {
-            question: "What is your approach to intellectual property protection?",
+            question: "Do you work with startups and SMEs across India?",
             answer:
-              "We focus on trademarks and copyrights that matter for your product and brand: clearance, filing, prosecution basics, and practical licensing or assignment clauses in your agreements.",
+              "Yes. Founders and small teams are our main focus: incorporation, ROC filings, contracts, Startup India / MSME-related documentation where relevant, and investor-ready paperwork - not a court-first litigation practice.",
           },
           {
-            question: "Do you offer ongoing legal retainer services?",
+            question: "How do you approach IP (trademarks and copyrights)?",
             answer:
-              "Yes, we offer flexible retainer packages for businesses that need continuous support — contract reviews, compliance touchpoints, and priority access for fundraising or regulatory questions.",
+              "We focus on what protects your go-to-market: trademark clearance and filing, class strategy, and copyright for assets that need it. Agreements can include licensing or assignment language so your deals stay clean.",
           },
           {
-            question: "How do you keep your service costs so low?",
+            question: "Do you offer retainers for ongoing compliance and contracts?",
             answer:
-              "We leverage modern legal technology for research and case management, maintain a lean operational structure, and believe quality legal services should be accessible to all. This allows us to offer competitive rates in India.",
+              "Yes - flexible retainers for regular contract reviews, compliance touchpoints, board/secretarial documentation, and priority support around fundraising or regulatory questions.",
           },
           {
-            question: "What happens after I engage your services?",
+            question: "How can I contact you?",
             answer:
-              "After the initial consultation, we assign a dedicated attorney to your matter, share a clear scope and timeline, and keep you updated as filings and documents progress.",
+              "Email info@legalnotion.in, use Get in Touch / About on the site, or WhatsApp via our on-site link. We respond on email and WhatsApp on business days.",
           },
         ]}
       />

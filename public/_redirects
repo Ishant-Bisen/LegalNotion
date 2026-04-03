@@ -1,1 +1,10 @@
+# SPA fallback
 /*    /index.html   200
+
+# Legacy paths → canonical keyword URLs (301 for SEO)
+/services              /legal-services              301
+/about                 /about-us                    301
+/blogs                 /legal-blog                  301
+/reviews               /client-reviews              301
+/legal-service         /legal-services              301
+/company-registration  /legal-services              301

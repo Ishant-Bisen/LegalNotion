@@ -46,7 +46,7 @@ export default function Careers() {
       yearNum > maxPassoutYear
     ) {
       setMessage(
-        `Please enter a valid pass-out year (${minPassoutYear}–${maxPassoutYear}).`
+        `Please enter a valid pass-out year (${minPassoutYear}-${maxPassoutYear}).`
       );
       setStatus("err");
       return;
@@ -93,14 +93,9 @@ export default function Careers() {
             Careers at Legal Notion
           </h1>
           <div className="text-white/95 text-lg leading-relaxed max-w-2xl mx-auto space-y-3 text-pretty">
-            <p>
-              Bring your résumé and a short note that tells us what kind of
-              problems you love to solve—whether that&apos;s strategy at the
-              desk, advocacy in the room, or smarter ways to serve clients.
-            </p>
-            <p className="text-white/85 text-base">
+            <p className="text-white/90 text-lg leading-relaxed">
               We read every application with care. If there&apos;s a real fit,
-              you&apos;ll hear from us—no silent inbox, no endless holding
+              you&apos;ll hear from us - no silent inbox, no endless holding
               pattern.
             </p>
           </div>
@@ -171,7 +166,7 @@ export default function Careers() {
               className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/15"
             />
             <p className="text-xs text-muted mt-1">
-              Expected year of graduation ({minPassoutYear}–{maxPassoutYear})
+              Expected year of graduation ({minPassoutYear}-{maxPassoutYear})
             </p>
           </div>
           <div>

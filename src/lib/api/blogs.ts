@@ -12,7 +12,7 @@ function unwrapList(data: unknown): BlogDto[] {
   return [];
 }
 
-/** GET /api/blogs — public list; omit credentials to avoid 401 from stray session cookies */
+/** GET /api/blogs - public list; omit credentials to avoid 401 from stray session cookies */
 export async function fetchBlogs(): Promise<BlogDto[]> {
   const data = await apiGet<unknown>("/api/blogs", {
     credentials: "omit",

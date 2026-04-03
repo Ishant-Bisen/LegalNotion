@@ -28,7 +28,7 @@ export default function WhatsAppConnect() {
             className="fixed bottom-19 right-6 z-50 bg-white shadow-lg rounded-lg px-3 py-2 pointer-events-none max-w-[200px]"
           >
             <p className="text-xs font-medium text-gray-800 leading-snug">
-              Connect on WhatsApp — we&apos;re one tap away
+              Connect on WhatsApp - we&apos;re one tap away
             </p>
             <div className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 bg-white shadow-sm rotate-45" />
           </motion.div>

@@ -1,21 +1,11 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import CloseIcon from "@mui/icons-material/Close";
-
-const navItems = [
-  { label: "Home", path: "/" },
-  { label: "Services", path: "/services" },
-  { label: "About", path: "/about" },
-  { label: "Blogs", path: "/blogs" },
-  { label: "Reviews", path: "/reviews" },
-  { label: "Careers", path: "/careers" },
-];
+import { Menu, X } from "lucide-react";
+import { PATHS, navItems } from "../routes/paths";
 
 /** Mobile drawer: main links (Careers is a dedicated CTA below). */
-const mobileMenuLinks = navItems.filter((item) => item.path !== "/careers");
+const mobileMenuLinks = navItems.filter((item) => item.path !== PATHS.careers);
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -48,9 +38,9 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex min-h-0 items-center justify-between gap-2.5 sm:gap-3 md:gap-6 lg:gap-8 min-w-0 py-1.5 sm:py-2">
-            {/* Logo — compact bar; zoom keeps mark visible in smaller frame */}
+            {/* Logo - compact bar; zoom keeps mark visible in smaller frame */}
             <NavLink
-              to="/"
+              to={PATHS.home}
               className="flex items-center gap-2 sm:gap-2.5 group min-w-0 flex-1 pr-1 md:flex-none md:min-w-0 md:shrink md:pr-3 lg:pr-5"
             >
               <motion.div
@@ -138,7 +128,7 @@ export default function Navbar() {
                 whileTap={{ scale: 0.95 }}
               >
                 <NavLink
-                  to="/about"
+                  to={PATHS.aboutUs}
                   className="ml-2 px-4 py-2 text-[13px] font-semibold text-white bg-primary rounded-full shadow-md transition-all duration-300 hover:bg-accent hover:shadow-lg lg:ml-3 lg:px-5 lg:text-sm"
                 >
                   Get in Touch
@@ -148,18 +138,26 @@ export default function Navbar() {
 
             {/* Mobile Hamburger */}
             <div className="md:hidden shrink-0 ml-1">
-              <IconButton
-                size="small"
+              <button
+                type="button"
                 onClick={() => setMobileOpen(!mobileOpen)}
-                sx={{ color: iconColor, transition: "color 0.5s" }}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full text-current transition-[color,background-color] duration-500 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                style={{ color: iconColor }}
+                aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                aria-expanded={mobileOpen}
               >
                 <motion.div
                   animate={{ rotate: mobileOpen ? 180 : 0 }}
                   transition={{ duration: 0.3 }}
+                  className="flex items-center justify-center"
                 >
-                  {mobileOpen ? <CloseIcon /> : <MenuIcon />}
+                  {mobileOpen ? (
+                    <X className="h-6 w-6" strokeWidth={2} aria-hidden />
+                  ) : (
+                    <Menu className="h-6 w-6" strokeWidth={2} aria-hidden />
+                  )}
                 </motion.div>
-              </IconButton>
+              </button>
             </div>
           </div>
         </div>
@@ -247,7 +245,7 @@ export default function Navbar() {
                 className="shrink-0 mt-4 pt-4 border-t border-gray-100 pb-[max(1.5rem,env(safe-area-inset-bottom))] space-y-3"
               >
                 <NavLink
-                  to="/careers"
+                  to={PATHS.careers}
                   onClick={() => setMobileOpen(false)}
                   className={({ isActive }) =>
                     `block text-center px-6 py-3 border-2 font-semibold rounded-full transition-colors ${
@@ -260,7 +258,7 @@ export default function Navbar() {
                   Careers
                 </NavLink>
                 <NavLink
-                  to="/about"
+                  to={PATHS.aboutUs}
                   onClick={() => setMobileOpen(false)}
                   className="block text-center px-6 py-3 bg-primary text-white font-semibold rounded-full"
                 >

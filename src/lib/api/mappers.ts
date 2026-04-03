@@ -44,7 +44,7 @@ export function mapBlogToCard(b: BlogDto): BlogCardModel {
   const content = str(b.content ?? b.body);
   const excerpt = str(b.excerpt ?? b.summary) || content.slice(0, 180) + (content.length > 180 ? "…" : "");
   const tags = Array.isArray(b.tags) ? b.tags.map((t) => String(t)) : [];
-  const readTime = str(b.readTime ?? b.read_time) || (content ? estimateReadTime(content) : "—");
+  const readTime = str(b.readTime ?? b.read_time) || (content ? estimateReadTime(content) : "-");
   const image =
     str(b.image ?? b.coverImage ?? b.cover_image) ||
     "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&h=400&fit=crop";
@@ -54,7 +54,7 @@ export function mapBlogToCard(b: BlogDto): BlogCardModel {
     category: str(b.category, "General"),
     title: str(b.title, "Untitled"),
     excerpt,
-    date: pickDate(b) || "—",
+    date: pickDate(b) || "-",
     readTime,
     image,
     tags,
@@ -125,11 +125,15 @@ export function buildCreateReviewPayload(input: {
   rating: number;
   text: string;
 }) {
+  const role = input.role.trim() || undefined;
   return {
     name: input.name,
-    role: input.role || undefined,
+    role,
     service: input.service,
     rating: input.rating,
     text: input.text,
+    // Common API aliases (backends often read one or the other)
+    author_name: input.name,
+    content: input.text,
   };
 }

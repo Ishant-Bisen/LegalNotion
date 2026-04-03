@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://legalnotion.in/sitemap.xml

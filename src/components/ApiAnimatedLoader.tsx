@@ -7,7 +7,7 @@ type ApiAnimatedLoaderProps = {
 };
 
 /**
- * Heavily animated loader for API fetch/submit — brand greens + gold.
+ * Heavily animated loader for API fetch/submit - brand greens + gold.
  */
 export default function ApiAnimatedLoader({
   message = "Loading…",
@@ -30,14 +30,14 @@ export default function ApiAnimatedLoader({
           transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
         />
 
-        {/* Outer ring — clockwise */}
+        {/* Outer ring - clockwise */}
         <motion.div
           className="absolute inset-0 rounded-full border-2 border-transparent border-t-gold border-r-gold-light/80 shadow-[0_0_20px_rgba(224,133,48,0.25)]"
           animate={{ rotate: 360 }}
           transition={{ duration: 1.4, repeat: Infinity, ease: "linear" }}
         />
 
-        {/* Mid ring — counter */}
+        {/* Mid ring - counter */}
         <motion.div
           className="absolute inset-3 rounded-full border-2 border-transparent border-b-secondary border-l-primary/90"
           animate={{ rotate: -360 }}
@@ -146,7 +146,7 @@ type ApiLoaderOverlayProps = {
   className?: string;
 };
 
-/** Frosted overlay with centered loader — parent must be `relative`. */
+/** Frosted overlay with centered loader - parent must be `relative`. */
 export function ApiLoaderOverlay({
   show,
   message,

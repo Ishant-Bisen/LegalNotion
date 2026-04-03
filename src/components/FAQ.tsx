@@ -46,11 +46,11 @@ export default function FAQ({
               {title}
             </h2>
             <p className="text-muted text-sm leading-relaxed mb-8">
-              Can't find what you're looking for? Reach out to us directly and
-              we'll be happy to help.
+              Can&apos;t find what you need? Email us or use the WhatsApp chat on
+              the site. We&apos;ll respond as soon as we can on business days.
             </p>
             <motion.a
-              href="mailto:info@legalnotion.com"
+              href="mailto:info@legalnotion.in"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
               className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-all"

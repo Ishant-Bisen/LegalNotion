@@ -228,23 +228,34 @@ export default function Reviews() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formName || !formText || !formRating || !formService) return;
+    if (!formName.trim() || !formText.trim() || !formService) {
+      setSubmitError("Please fill in your name, service, and review text.");
+      return;
+    }
+    if (!formRating || formRating < 1) {
+      setSubmitError("Please tap the stars to choose a rating.");
+      return;
+    }
     setSubmitError(null);
     setReviewSubmitting(true);
     try {
       await createReview(
         buildCreateReviewPayload({
-          name: formName,
+          name: formName.trim(),
           role: formRole,
           service: formService,
           rating: formRating,
-          text: formText,
+          text: formText.trim(),
         })
       );
     } catch (err) {
-      setSubmitError(
-        err instanceof ApiError ? err.message : "Could not submit review."
-      );
+      const message =
+        err instanceof ApiError
+          ? err.message
+          : err instanceof TypeError
+            ? "Could not reach the server. Check your connection or try again later."
+            : "Could not submit review.";
+      setSubmitError(message);
       setReviewSubmitting(false);
       return;
     }
@@ -271,7 +282,8 @@ export default function Reviews() {
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full border border-white/10"
+          className="pointer-events-none absolute -top-20 -right-20 hidden h-[400px] w-[400px] rounded-full border border-white/10 lg:block"
+          aria-hidden
         />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -347,7 +359,7 @@ export default function Reviews() {
               </div>
             ) : (
             <div className="grid sm:grid-cols-2 gap-8 items-center">
-              {/* Left — Overall Rating */}
+              {/* Left - Overall Rating */}
               <div className="text-center sm:text-left">
                 <div className="font-heading text-6xl font-bold text-white">
                   {averageRating.toFixed(1)}
@@ -367,7 +379,7 @@ export default function Reviews() {
                 </p>
               </div>
 
-              {/* Right — Rating Bars */}
+              {/* Right - Rating Bars */}
               <div className="space-y-2">
                 {[5, 4, 3, 2, 1].map((star) => {
                   const count = ratingDistribution[star - 1];
@@ -676,7 +688,7 @@ export default function Reviews() {
                   )}
                 </div>
 
-                {/* Replies Panel — hidden by default, scrollable */}
+                {/* Replies Panel - hidden by default, scrollable */}
                 <AnimatePresence>
                   {replyingTo === review.id && (
                     <motion.div

@@ -1,4 +1,4 @@
-/** Backend may use camelCase or snake_case — normalizers accept both. */
+/** Backend may use camelCase or snake_case - normalizers accept both. */
 export type UnknownRecord = Record<string, unknown>;
 
 export interface BlogDto extends UnknownRecord {

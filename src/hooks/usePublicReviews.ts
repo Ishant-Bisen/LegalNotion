@@ -10,7 +10,7 @@ export type ReviewStats = {
   count: number;
   avg: number;
   serviceCount: number;
-  /** 0–100 from average rating, or null if no reviews */
+  /** 0-100 from average rating, or null if no reviews */
   satisfactionPct: number | null;
 };
 

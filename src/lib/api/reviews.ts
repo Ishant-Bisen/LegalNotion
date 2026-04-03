@@ -12,7 +12,7 @@ function unwrapList(data: unknown): ReviewDto[] {
   return [];
 }
 
-/** GET /api/reviews — public list; omit credentials to avoid accidental 401 from session cookies */
+/** GET /api/reviews - public list; omit credentials to avoid accidental 401 from session cookies */
 export async function fetchReviews(): Promise<ReviewDto[]> {
   const data = await apiGet<unknown>("/api/reviews", {
     credentials: "omit",
@@ -28,9 +28,12 @@ export type CreateReviewPayload = {
   service?: string;
 };
 
-/** POST /api/reviews */
+/**
+ * POST /api/reviews - public create; omit credentials (same as fetchReviews)
+ * so cross-origin requests from Pages work without cookie/CORS issues.
+ */
 export async function createReview(
   body: CreateReviewPayload
 ): Promise<unknown> {
-  return apiPost("/api/reviews", body);
+  return apiPost("/api/reviews", body, { credentials: "omit" });
 }

@@ -18,7 +18,7 @@ export function shouldTreatPublicListAsEmpty(error: unknown): boolean {
   );
 }
 
-/** @deprecated Use shouldTreatPublicListAsEmpty — same implementation */
+/** @deprecated Use shouldTreatPublicListAsEmpty - same implementation */
 export const shouldTreatReviewsListAsEmpty = shouldTreatPublicListAsEmpty;
 
 function clampMessage(msg: string): string {

@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
+import { navItems } from "../routes/paths";
 
 export default function Footer() {
   return (
@@ -37,13 +38,13 @@ export default function Footer() {
               Quick Links
             </h4>
             <ul className="space-y-2">
-              {["Home", "Services", "About", "Blogs"].map((item) => (
-                <li key={item}>
+              {navItems.map((item) => (
+                <li key={item.path}>
                   <NavLink
-                    to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+                    to={item.path}
                     className="text-white/90 hover:text-gold transition-colors text-sm"
                   >
-                    {item}
+                    {item.label}
                   </NavLink>
                 </li>
               ))}
@@ -80,11 +81,18 @@ export default function Footer() {
                 >
                   <span className="mt-0.5 shrink-0">📍</span>
                   <span>
-                    Shivajinagar, Pune, Maharashtra — 411005
+                    Shivajinagar, Pune, Maharashtra - 411005
                   </span>
                 </a>
               </li>
-              <li>info@legalnotion.com</li>
+              <li>
+                <a
+                  href="mailto:info@legalnotion.in"
+                  className="hover:text-gold transition-colors"
+                >
+                  info@legalnotion.in
+                </a>
+              </li>
             </ul>
           </div>
         </div>
